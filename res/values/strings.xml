@@ -3,7 +3,7 @@
 
     <string name="app_name">GPU Control</string>
     <string name="fragment_inf_title">INFO</string>
-    <string name="fragment_inf_label1">GPU Control plus zCache enabler for Motorola Defy</string>
+    <string name="fragment_inf_label1">GPU Control and zCache enabler for Motorola Defy</string>
     <string name="fragment_inf_label2">Requirements:\nQuarx\'s CM10.1 and Blechd0se\'s kernel updated to the latest version. </string>
     <string name="fragment_gpu_title">GPU</string>
     <string name="fragment_gpu_switch">Enable GPU control</string>
@@ -15,9 +15,9 @@
     <string name="menu_about">About</string>
     <string name="menu_exit">Exit</string>
 
-    <string name="msg_about">CPU Control\nwritten by xdaid, 2013</string>
+    <string name="msg_about">GPU Control\nwritten by xdaid, 2013</string>
     <string name="msg_na">n/a</string>
-    <string name="msg_okmaxfreq"> * GPU max frequency was set * </string>
+    <string name="msg_okmaxfreq">Applying new GPU max frequency&#8230;</string>
     <string name="msg_nomaxfreq">Unable to detect GPU max frequency\nIs the kernel updated to the latest Blechd0se\'s version?</string>
 
 </resources>

@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -28,6 +27,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class MainActivity extends FragmentActivity
 {
@@ -39,21 +39,22 @@ public class MainActivity extends FragmentActivity
 	 * intensive, it may be best to switch to a
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
-	SectionsPagerAdapter mSectionsPagerAdapter;
+	private SectionsPagerAdapter mSectionsPagerAdapter;
 
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-	ViewPager mViewPager;
+	private ViewPager mViewPager;
 
+	static private String FILE_GPU = "/sys/kernel/gpu_control/gpu_control_active";
+	static private String FILE_MAX = "/sys/kernel/gpu_control/max_freq";
+	static private String FILE_CMD = "/system/bootmenu/2nd-boot/cmdline";
 
-	static String FILE_GPU = "/sys/kernel/gpu_control/gpu_control_active";
-	static String FILE_MAX = "/sys/kernel/gpu_control/max_freq";
-	static String FILE_CMD = "/system/bootmenu/2nd-boot/cmdline";
+	static private boolean meetRequirements = true;
+	static private boolean controlEnabled = true;
+	static private boolean zcacheEnabled = true;
 
-	static boolean meetRequirements = true;
-	static boolean controlEnabled = true;
-	static boolean zcacheEnabled = true;
+ 	static private String[] values = new String[] { "n/a", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250" };
 
 
 	@Override
@@ -181,25 +182,30 @@ public class MainActivity extends FragmentActivity
 			String fileMAX = execsh("cat " + FILE_MAX);
 			controlEnabled = fileGPU.length() == 0 ? false : Integer.parseInt(fileGPU) == 1;
 			int textColor = controlEnabled ? 0xFF000000 : 0xFFA0A0A0;
+
 			View layout = inflater.inflate(R.layout.fragment_gpu, null);
+
 			Switch sv1 = (Switch)layout.findViewById(R.id.fragment_gpu_sv1);
 			sv1.setText(R.string.fragment_gpu_switch);
 			sv1.setChecked(controlEnabled);
+
 			final TextView tv1 = (TextView)layout.findViewById(R.id.fragment_gpu_tv1);
 			tv1.setText(R.string.fragment_gpu_select);
 			tv1.setTextColor(textColor);
-			final TextView tv2 = (TextView)layout.findViewById(R.id.fragment_gpu_tv2);
-			tv2.setGravity(Gravity.CENTER);
-			tv2.setTextColor(textColor);
-			final TextView bt1 = (TextView)layout.findViewById(R.id.fragment_gpu_bt1);
-			bt1.setText("-");
+
+			final ValuePicker vp1 = (ValuePicker)layout.findViewById(R.id.fragment_gpu_vp1);
+			vp1.setValues(values);
+            vp1.setTextColor(textColor);
+        	vp1.setOnValueChangedListener(new ValuePicker.OnValueChangedListener()
+			{
+		    	@Override
+		    	public void valueChanged(ValuePicker sender, int value) { }
+			});
+
+			final TextView bt1 = (TextView)layout.findViewById(R.id.fragment_gpu_bt3);
+			bt1.setText("apply");
 			bt1.setTextColor(textColor);
-			final TextView bt2 = (TextView)layout.findViewById(R.id.fragment_gpu_bt2);
-			bt2.setText("+");
-			bt2.setTextColor(textColor);
-			final TextView bt3 = (TextView)layout.findViewById(R.id.fragment_gpu_bt3);
-			bt3.setText("apply");
-			bt3.setTextColor(textColor);
+
 			sv1.setOnCheckedChangeListener(new OnCheckedChangeListener()
 			{
 				@Override
@@ -214,10 +220,8 @@ public class MainActivity extends FragmentActivity
 					controlEnabled = checked;
 					int textColor = checked ? 0xFF000000 : 0xFFA0A0A0;
 					tv1.setTextColor(textColor);
-					tv2.setTextColor(textColor);
+					vp1.setTextColor(textColor);
 					bt1.setTextColor(textColor);
-					bt2.setTextColor(textColor);
-					bt3.setTextColor(textColor);
 					String permGPU = getFilePerm(FILE_GPU);
 			    	String numPerm = numericPermissionString(permGPU);
 					String[] cmds = new String[]
@@ -234,41 +238,17 @@ public class MainActivity extends FragmentActivity
 				meetRequirements = false;
 				textColor = 0xFFA0A0A0;
 				tv1.setTextColor(textColor);
-				tv2.setTextColor(textColor);
+				vp1.setTextColor(textColor);
 				bt1.setTextColor(textColor);
-				bt2.setTextColor(textColor);
-				bt3.setTextColor(textColor);
-				tv2.setText(R.string.msg_na);
+	            vp1.setValue("n/a");
 				Toast.makeText(getActivity(), R.string.msg_nomaxfreq, Toast.LENGTH_LONG).show();
 				return layout;
 			}
+
 			int clk = Integer.parseInt(fileMAX) / 1000000;
-			tv2.setText( String.valueOf(clk) );
-			bt1.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View arg0)
-				{
-					if (!controlEnabled) return;
-					int clk = Integer.parseInt( (String)tv2.getText() );
-					if (clk == 100) return;
-					clk -= 10;
-					tv2.setText( String.valueOf(clk) );
-				}
-			});
-			bt2.setOnClickListener(new OnClickListener()
-			{
-				@Override
-				public void onClick(View arg0)
-				{
-					if (!controlEnabled) return;
-					int clk = Integer.parseInt( (String)tv2.getText() );
-					if (clk == 250) return;
-					clk += 10;
-					tv2.setText( String.valueOf(clk) );
-				}
-			});
-			bt3.setOnTouchListener(new OnTouchListener()
+			vp1.setValue(String.valueOf(clk));
+
+			bt1.setOnTouchListener(new OnTouchListener()
 			{
 				@Override
 				public boolean onTouch(View v, MotionEvent event)
@@ -294,20 +274,20 @@ public class MainActivity extends FragmentActivity
 					}
 					if (event.getAction() == MotionEvent.ACTION_UP)
 					{
-						if (v == bt3) v.setBackgroundResource(R.drawable.shape_round_rect);
+						if (v == bt1) v.setBackgroundResource(R.drawable.shape_round_rect);
 						Rect bounds = new Rect();
 						v.getDrawingRect(bounds);
 						if (bounds.contains((int)event.getX(), (int)event.getY()))
 						{
 							if (!controlEnabled) return true;
-							int clk = Integer.parseInt( (String)tv2.getText() );
-							clk *= 1000000;
+							String value = vp1.getValue();
+							if (value.equals("n/a")) return true;
 					    	String permMAX = getFilePerm(FILE_MAX);
 							String numPerm = numericPermissionString(permMAX);
 							String[] cmds = new String[]
 							{
 								"chmod 777 " + FILE_MAX,
-								"echo " + clk + " > " + FILE_MAX,
+								"echo " + value + " > " + FILE_MAX,
 								"chmod " + numPerm + " " + FILE_MAX
 							};
 					    	execsu(cmds);
