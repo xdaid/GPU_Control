@@ -4,7 +4,7 @@
     <string name="app_name">GPU Control</string>
     <string name="fragment_inf_title">INFO</string>
     <string name="fragment_inf_label1">GPU Control and zCache enabler for Motorola Defy</string>
-    <string name="fragment_inf_label2">Requirements:\nQuarx\'s CM10.1 and Blechd0se\'s kernel updated to the latest version. </string>
+    <string name="fragment_inf_label2">Requirements:\nQuarx\'s CM10.2 and Blechd0se\'s kernel updated to the latest version. </string>
     <string name="fragment_gpu_title">GPU</string>
     <string name="fragment_gpu_switch">Enable GPU control</string>
     <string name="fragment_gpu_select">Set Max frequency</string>

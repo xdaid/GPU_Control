@@ -46,8 +46,8 @@ public class ValuePicker extends View
     private TimerTask tt_dec;
     private TimerTask tt_inc;
 
-    private int rround = dipToPix(3);
-    private int tsize  = dipToPix(16);
+    private int rround = dipToPix(4);
+    private int tsize  = dipToPix(18);
     private int tcolor = 0xFF000000;
 
 
@@ -115,8 +115,8 @@ public class ValuePicker extends View
     {
 		mState = 0;
 
-        mPaintX = 10;
-        mPaintY = 12;
+        mPaintX = 0;
+        mPaintY = 0;
 
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaint.setStyle(Paint.Style.FILL);
@@ -181,8 +181,8 @@ public class ValuePicker extends View
 	@Override 
     protected void onDraw(Canvas canvas)
     {
-    	mPaintWidth = this.getWidth() - mPaintX * 2 - 1;
-        mPaintHeight = this.getHeight() - mPaintY * 2 - 1;
+    	mPaintWidth = this.getWidth() - mPaintX * 2;
+        mPaintHeight = this.getHeight() - mPaintY * 2;
 
         mText = mValues[mValueIndex];
 
@@ -191,15 +191,15 @@ public class ValuePicker extends View
         if (mState == 1)
         {
             mPaint.setColor(0xFF00B0F0);
-            canvas.drawRoundRect(new RectF(mPaintX, mPaintY, mPaintX + mPaintWidth/4, mPaintY + mPaintHeight), rround, rround, mPaint);
+            canvas.drawRoundRect(new RectF(mPaintX, mPaintY, mPaintX + mPaintWidth/4 + rround, mPaintY + mPaintHeight), rround, rround, mPaint);
         }
         if (mState == 2)
         {
             mPaint.setColor(0xFF00B0F0);
-            canvas.drawRoundRect(new RectF(mPaintX + mPaintWidth/4 * 3, mPaintY, mPaintX + mPaintWidth, mPaintY + mPaintHeight), rround, rround, mPaint);
+            canvas.drawRoundRect(new RectF(mPaintX + mPaintWidth/4*3 - rround, mPaintY, mPaintX + mPaintWidth, mPaintY + mPaintHeight), rround, rround, mPaint);
         }
         mPaint.setColor(0x80F0F0F0);
-        canvas.drawRect(new RectF(mPaintX + mPaintWidth/4, mPaintY + 1, mPaintX + mPaintWidth - mPaintWidth/4, mPaintY - 1 + mPaintHeight), mPaint);
+        canvas.drawRect(new RectF(mPaintX + mPaintWidth/4, mPaintY + 4, mPaintX + mPaintWidth/4*3, mPaintY + mPaintHeight - 4), mPaint);
 
         mTextPaint.setTextSize(tsize);
         mTextPaint.setColor(tcolor);
@@ -207,8 +207,8 @@ public class ValuePicker extends View
         canvas.drawText("-", mPaintX + mPaintWidth/8, this.getHeight() / 2 + mTextPaint.getTextSize() / 3 - 2, mTextPaint);
         canvas.drawText("+", mPaintX + mPaintWidth - mPaintWidth/8, this.getHeight() / 2 + mTextPaint.getTextSize() / 3 + 1, mTextPaint);
  
-        mDecorPaint.setColor(0xFF404040);
-        canvas.drawRoundRect(new RectF(mPaintX - 2, mPaintY - 2, mPaintX + mPaintWidth + 2, mPaintY + mPaintHeight + 2), rround, rround, mDecorPaint);
+        //mDecorPaint.setColor(0xFF404040);
+        //canvas.drawRoundRect(new RectF(mPaintX - 2, mPaintY - 2, mPaintX + mPaintWidth + 2, mPaintY + mPaintHeight + 2), rround, rround, mDecorPaint);
     }
 
 

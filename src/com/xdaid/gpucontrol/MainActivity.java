@@ -3,6 +3,7 @@ package com.xdaid.gpucontrol;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -54,10 +55,12 @@ public class MainActivity extends FragmentActivity
 	static private boolean controlEnabled = true;
 	static private boolean zcacheEnabled = true;
 
- 	static private String[] values = new String[] { "n/a", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200", "210", "220", "230", "240", "250" };
+	static private String[] values = new String[] { "n/a", "16", "33", "66", "100", "133", "200", "266" };
+ 	static private String[] rawValues = new String[] { "n/a", "16666666", "33333333", "66666666", "100000000", "133333333", "200000000", "266666666" };
 
 
-	@Override
+
+ 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -280,14 +283,15 @@ public class MainActivity extends FragmentActivity
 						if (bounds.contains((int)event.getX(), (int)event.getY()))
 						{
 							if (!controlEnabled) return true;
-							String value = vp1.getValue();
-							if (value.equals("n/a")) return true;
-					    	String permMAX = getFilePerm(FILE_MAX);
+							String rawValue = getRawValue( vp1.getValue() );
+							if (rawValue.equals("n/a")) return true;
+					    	
+							String permMAX = getFilePerm(FILE_MAX);
 							String numPerm = numericPermissionString(permMAX);
 							String[] cmds = new String[]
 							{
 								"chmod 777 " + FILE_MAX,
-								"echo " + value + " > " + FILE_MAX,
+								"echo " + rawValue + " > " + FILE_MAX,
 								"chmod " + numPerm + " " + FILE_MAX
 							};
 					    	execsu(cmds);
@@ -426,6 +430,14 @@ public class MainActivity extends FragmentActivity
     	}
     	catch (Exception e) { }
     	return output;
+    }
+
+
+    public static String getRawValue(String value)
+    {
+    	ArrayList<String> al = new ArrayList<String>();
+    	for (String s : values) al.add(s);
+    	return rawValues[al.indexOf(value)];
     }
 
 
